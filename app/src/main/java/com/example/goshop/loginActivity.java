@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
 
@@ -23,6 +24,7 @@ public class loginActivity extends AppCompatActivity {
     private EditText InputPhoneNumber, InputPassword;
     private Button LoginButton;
     private ProgressDialog lodingBar;
+    private TextView AdminLink, NotAdminLink;
     private String parentDbName = "Users";
 
     @Override
@@ -33,6 +35,8 @@ public class loginActivity extends AppCompatActivity {
         LoginButton = (Button) findViewById(R.id.login_button);
         InputPassword = (EditText) findViewById(R.id.login_password_input);
         InputPhoneNumber = (EditText) findViewById(R.id.login_phone_number_input);
+        AdminLink = (TextView) findViewById(R.id.admin_panel_link);
+        NotAdminLink = (TextView) findViewById(R.id.not_admin_panel_link);
         lodingBar = new ProgressDialog(this);
         
         LoginButton.setOnClickListener(new View.OnClickListener(){
@@ -40,6 +44,25 @@ public class loginActivity extends AppCompatActivity {
             public void onClick(View view)
             {
                 LoginUser();
+            }
+        });
+        AdminLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LoginButton.setText("Login Admin");
+                AdminLink.setVisibility(View.INVISIBLE);
+                NotAdminLink.setVisibility(View.VISIBLE);
+                parentDbName = "Admins";
+            }
+        });
+
+        NotAdminLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LoginButton.setText("Login");
+                AdminLink.setVisibility(View.VISIBLE);
+                NotAdminLink.setVisibility(View.INVISIBLE);
+                parentDbName = "Users";
             }
         });
     }
@@ -84,11 +107,22 @@ public class loginActivity extends AppCompatActivity {
                     {
                         if(usersdata.getPassword().equals(password))
                         {
-                            Toast.makeText(loginActivity.this, "login successful", Toast.LENGTH_SHORT).show();
-                            lodingBar.dismiss();
+                            if (parentDbName.equals("Admins"))
+                            {
+                                Toast.makeText(loginActivity.this, "Welcome admin, login successful", Toast.LENGTH_SHORT).show();
+                                lodingBar.dismiss();
 
-                            Intent intent = new Intent(loginActivity.this, HomeActivity.class);
-                            startActivity(intent);
+                                Intent intent = new Intent(loginActivity.this, AdminCategoryActivity.class);
+                                startActivity(intent);
+                            }
+                            else if (parentDbName.equals("Users"))
+                            {
+                                Toast.makeText(loginActivity.this, "login successful", Toast.LENGTH_SHORT).show();
+                                lodingBar.dismiss();
+
+                                Intent intent = new Intent(loginActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                            }
                         }
                         else
                         {
